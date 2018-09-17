@@ -3,7 +3,7 @@ const fs = require('fs');
 
 class HtmlInjectPlugin {
     constructor(options) {
-        this.options = options || {};//filename,hash,template,chunks
+        this.options = options || {};//filename,template,chunks
     }
 
     apply(compiler) {
@@ -30,7 +30,7 @@ class HtmlInjectPlugin {
             const chunks = compilation.getStats().toJson(chunkOnlyConfig).chunks;
 
             const assets = {
-                compilationHash: compilation.hash,
+                hash: compilation.hash,
                 publicPath: compilation.outputOptions.publicPath || '',
                 entry:{}
             };
