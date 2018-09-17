@@ -1,0 +1,25 @@
+{
+  "name": "html-inject-plugin",
+  "version": "1.0.0",
+  "description": "html inject plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yi-love/html-inject-plugin.git"
+  },
+  "keywords": [
+    "html",
+    "inject",
+    "webpack",
+    "plugin"
+  ],
+  "author": "Yi-love",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Yi-love/html-inject-plugin/issues"
+  },
+  "homepage": "https://github.com/Yi-love/html-inject-plugin#readme"
+}
