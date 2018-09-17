@@ -112,7 +112,6 @@ class HtmlInjectPlugin {
                  
             }
         }
-        console.log(cssHtml);
         return cssHtml.join('');
     }
     //获取template文件

@@ -1,5 +1,5 @@
 # Html-inject-plugin
-this is a plugin use webpack.
+this is a plugin use webpack4.
 
 ## npm
 ```
