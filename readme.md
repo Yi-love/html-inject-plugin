@@ -1,9 +1,12 @@
 # Html-inject-plugin
-this is a plugin use webpack4.
+inject `<link>` and `<script>` to output file.  this is a webpack4 plugin.
 
 ## npm
 ```
+npm install --save-dev html-inject-plugin
 ```
+
+## use
 
 ```js
 new HtmlInjectPlugin({
@@ -39,11 +42,13 @@ new HtmlInjectPlugin({
 
 ## synx
 
+* entry  入口文件的名称 
+
 ```
-<!-- inject:(css|js)(entry)? -->
+<!-- inject:(css|js)(:entry)? -->
 ```
 
-## example
+## output file
 
 ```html
 <!DOCTYPE html>
