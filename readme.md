@@ -16,6 +16,12 @@ new HtmlInjectPlugin({
 });
 ```
 
+### params
+
+* filename
+* chunks
+* template
+
 ```html
 //template.html
 <!DOCTYPE html>
@@ -23,7 +29,7 @@ new HtmlInjectPlugin({
 <head>
     <meta charset="UTF-8">
     <title>test</title>
-    <!-- inject:css:header -->
+    <!-- inject:css -->
 </head>
 <body>
     <div class="body-wrapper">
@@ -45,7 +51,7 @@ new HtmlInjectPlugin({
 * entry  入口文件的名称 
 
 ```
-<!-- inject:(css|js)(:entry)? -->
+<!-- inject:(css|js)(:entry?) -->
 ```
 
 ## output file

@@ -1,9 +1,10 @@
 const path = require('path');
 const fs = require('fs');
+const url = require('url');
 
 class HtmlInjectPlugin {
     constructor(options) {
-        this.options = options || {};//filename,template,chunks
+        this.options = options || {};//filename,template,chunks,encode
     }
 
     apply(compiler) {
@@ -54,7 +55,7 @@ class HtmlInjectPlugin {
                 assets.entry[chunkName].siblings = chunk.siblings;
             }
 
-            let html = fs.readFileSync(self.options.template , 'utf-8') || '';
+            let html = fs.readFileSync(self.options.template , self.options.encode || 'utf-8') || '';
             let injectRegx = /<!--\s*inject:(css|js)(:[a-z0-9A-Z._-]+)?\s*-->/img;
 
             //注入js,css
@@ -92,7 +93,7 @@ class HtmlInjectPlugin {
             if ( name && assets.entry !== name ){
                 continue;
             }
-            scriptHtml.push('<script src="' + path.join(assets.publicPath , assets.entry[chunks[i]].js) + '"></script>');
+            scriptHtml.push('<script src="' + url.resolve(assets.publicPath , assets.entry[chunks[i]].js) + '"></script>');
         }
         return scriptHtml.join('');
     }
@@ -107,7 +108,7 @@ class HtmlInjectPlugin {
             let arr = assets.entry[chunks[i]].css;
             for ( let j = 0 ; j < arr.length; j ++ ){
                 if ( arr[j] ){
-                    cssHtml.push('<link rel="stylesheet" href="' + path.join(assets.publicPath , arr[j]) + '"/>');   
+                    cssHtml.push('<link rel="stylesheet" href="' + url.resolve(assets.publicPath , arr[j]) + '"/>');   
                 }
                  
             }
