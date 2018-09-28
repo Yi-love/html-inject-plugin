@@ -2,6 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const url = require('url');
 
+const childCompiler = require('./lib/compiler');
+
 class HtmlInjectPlugin {
     constructor(options) {
         this.options = options || {};//filename,template,chunks,encode
@@ -9,10 +11,25 @@ class HtmlInjectPlugin {
 
     apply(compiler) {
         const self = this;
+        let compilationPromise;
         this.options.template = this.getFullTemplatePath(this.options.template, compiler.context);
-
+        //主要创建实时编译模版文件
+        compiler.hooks.make.tapAsync('HtmlInjectPlugin' , (compilation, callback) => {
+            compilationPromise = childCompiler.createTemplate(self.options.template, compiler.context, self.options.filename, compilation)
+                .catch(err => {
+                    compilation.errors.push(err.toString());
+                    return {
+                        content: self.options.showErrors ? err.toString() : 'ERROR',
+                        outputName: self.options.filename
+                    };
+                })
+                .then(compilationResult => {
+                    callback();
+                    return compilationResult.content;
+                });
+        });
+        //触发编译
         compiler.hooks.emit.tapAsync('HtmlInjectPlugin', (compilation, callback) => {
-
             const chunkOnlyConfig = {
                 assets: false,
                 cached: false,
@@ -28,6 +45,7 @@ class HtmlInjectPlugin {
                 timings: false,
                 version: false
             };
+
             const chunks = compilation.getStats().toJson(chunkOnlyConfig).chunks;
 
             const assets = {
