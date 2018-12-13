@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const url = require('url');
 
 const childCompiler = require('./lib/compiler');
 
@@ -111,7 +110,7 @@ class HtmlInjectPlugin {
             if ( name && assets.entry !== name ){
                 continue;
             }
-            scriptHtml.push('<script src="' + url.resolve(assets.publicPath , assets.entry[chunks[i]].js) + '"></script>');
+            scriptHtml.push('<script src="' + assets.publicPath + assets.entry[chunks[i]].js + '"></script>');
         }
         return scriptHtml.join('');
     }
@@ -126,7 +125,7 @@ class HtmlInjectPlugin {
             let arr = assets.entry[chunks[i]].css;
             for ( let j = 0 ; j < arr.length; j ++ ){
                 if ( arr[j] ){
-                    cssHtml.push('<link rel="stylesheet" href="' + url.resolve(assets.publicPath , arr[j]) + '"/>');   
+                    cssHtml.push('<link rel="stylesheet" href="' + assets.publicPath + arr[j] + '"/>');   
                 }
                  
             }
