@@ -106,7 +106,7 @@ class HtmlInjectPlugin {
     getFullscript(assets , name){
         let scriptHtml = [];
         let chunks = this.options.chunks || [];
-        let crossorigin = this.options.crossorigin ? ('crossorigin=" '+ this.options.crossorigin + '"') : '';
+        let crossorigin = this.options.crossorigin ? ('crossorigin="'+ this.options.crossorigin + '"') : '';
         for ( let i = 0 ; i < chunks.length ; i++ ){
             if ( name && assets.entry !== name ){
                 continue;

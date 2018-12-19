@@ -12,7 +12,7 @@ npm install --save-dev html-inject-plugin
 new HtmlInjectPlugin({
     filename: 'test.html',
     chunks:['vue' , 'test'],
-    crossorigin: 'anonymous,
+    crossorigin: 'anonymous',
     template: path.resolve(__dirname , 'template.html')
 });
 ```
