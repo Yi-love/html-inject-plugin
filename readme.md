@@ -12,6 +12,7 @@ npm install --save-dev html-inject-plugin
 new HtmlInjectPlugin({
     filename: 'test.html',
     chunks:['vue' , 'test'],
+    crossorigin: 'anonymous,
     template: path.resolve(__dirname , 'template.html')
 });
 ```
@@ -76,8 +77,8 @@ new HtmlInjectPlugin({
         </div>
         <div id="footerApp">footer</div> 
     </div>
-    <script src="http:/www.test.com/dist/vue.js?v=2981d8bb85bde7e5ce33"></script>
-<script src="http:/www.test.com/dist/test.js?v=2981d8bb85bde7e5ce33"></script>
+    <script crossorigin="anonymous" src="http:/www.test.com/dist/vue.js?v=2981d8bb85bde7e5ce33"></script>
+<script crossorigin="anonymous" src="http:/www.test.com/dist/test.js?v=2981d8bb85bde7e5ce33"></script>
 <!-- inject:js -->
 </body>
 </html>

@@ -5,7 +5,7 @@ const childCompiler = require('./lib/compiler');
 
 class HtmlInjectPlugin {
     constructor(options) {
-        this.options = options || {};//filename,template,chunks,encode
+        this.options = options || {};//filename,template,chunks,encode,crossorigin 
     }
 
     apply(compiler) {
@@ -106,11 +106,12 @@ class HtmlInjectPlugin {
     getFullscript(assets , name){
         let scriptHtml = [];
         let chunks = this.options.chunks || [];
+        let crossorigin = this.options.crossorigin ? ('crossorigin=" '+ this.options.crossorigin + '"') : '';
         for ( let i = 0 ; i < chunks.length ; i++ ){
             if ( name && assets.entry !== name ){
                 continue;
             }
-            scriptHtml.push('<script src="' + assets.publicPath + assets.entry[chunks[i]].js + '"></script>');
+            scriptHtml.push('<script ' + crossorigin + ' src="' + assets.publicPath + assets.entry[chunks[i]].js + '"></script>');
         }
         return scriptHtml.join('');
     }
