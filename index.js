@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 
 const childCompiler = require('./lib/compiler');
+const { hrtime } = require('process');
 
 class HtmlInjectPlugin {
     constructor(options) {
@@ -10,11 +11,10 @@ class HtmlInjectPlugin {
 
     apply(compiler) {
         const self = this;
-        let compilationPromise;
         this.options.template = this.getFullTemplatePath(this.options.template, compiler.context);
         //主要创建实时编译模版文件
         compiler.hooks.make.tapAsync('HtmlInjectPlugin' , (compilation, callback) => {
-            compilationPromise = childCompiler.createTemplate(self.options.template, compiler.context, self.options.filename, compilation)
+            childCompiler.createTemplate(self.options.template, compiler.context, self.options.filename, compilation)
                 .catch(err => {
                     compilation.errors.push(err.toString());
                     return {
@@ -71,9 +71,18 @@ class HtmlInjectPlugin {
                 //depend
                 assets.entry[chunkName].siblings = chunk.siblings;
             }
-
+            
             let html = fs.readFileSync(self.options.template , self.options.encode || 'utf-8') || '';
+            // 获取预加载文件
+            let cssPreload = self.getFullCss(assets, false, true);
+            let jsPreload = self.getFullScript(assets, false, true);
+            let injectPreloadRegx = /<!--\s*inject:preload\s*-->/img;
             let injectRegx = /<!--\s*inject:(css|js)(:[a-z0-9A-Z._-]+)?\s*-->/img;
+            
+            // 注入Preload
+            html = html.replace(injectPreloadRegx, function(source){
+                return cssPreload + jsPreload + source;
+            });
 
             //注入js,css
             html = html.replace(injectRegx , function(source , ext , name , index) {
@@ -82,9 +91,9 @@ class HtmlInjectPlugin {
                 }
                 switch(ext){
                     case 'js':
-                        return self.getFullscript(assets , name) + source;
+                        return self.getFullScript(assets , name, false) + source;
                     case 'css':
-                        return self.getFullCss(assets , name) + source;
+                        return self.getFullCss(assets , name, false) + source;
                     default:
                         break;
                 }
@@ -98,39 +107,71 @@ class HtmlInjectPlugin {
                     return html.length;
                 }
             };
-
             callback();
         });
     }
     //生成script
-    getFullscript(assets , name){
+    getFullScript(assets , name = false, isPreload = false){
         let scriptHtml = [];
         let chunks = this.options.chunks || [];
         let jsOptions = this.options.jsOptions || [];
+        let preList = [];
 
         for ( let i = 0 ; i < chunks.length ; i++ ){
-            if ( name && assets.entry !== name ){
+            let chunkName = chunks[i];
+            if (name && chunkName !== name){
                 continue;
             }
-            scriptHtml.push('<script ' + jsOptions.join(' ') + ' src="' + assets.publicPath + assets.entry[chunks[i]].js + '"></script>');
+            let attrs = [].concat(Array.isArray(jsOptions) ? jsOptions : typeof jsOptions === 'object' && Array.isArray(jsOptions[chunkName]) ? jsOptions[chunkName] : []);
+            let index = attrs.length ? attrs.findIndex((e)=>e.trim() === 'rel="preload"') : -1;
+            if (!assets.entry[chunkName] || !assets.entry[chunkName].js){
+                continue;
+            }
+            if (isPreload){
+                if (index >= 0 && !preList.includes(assets.publicPath + assets.entry[chunkName].js)){
+                    scriptHtml.push('<link ' + ['rel="preload"', 'as="script"'].join(' ') + ' src="' + assets.publicPath + assets.entry[chunkName].js + '"></link>');
+                }
+            }else {
+                if (index >= 0){
+                    attrs.splice(index, 1);
+                }
+                scriptHtml.push('<script ' + attrs.join(' ') + ' src="' + assets.publicPath + assets.entry[chunkName].js + '"></script>');
+            }
         }
         return scriptHtml.join('');
     }
     //生成css
-    getFullCss(assets , name){
+    getFullCss(assets , name = false, isPreload = false){
         let cssHtml = [];
+
         let chunks = this.options.chunks || [];
         let cssOptions = this.options.cssOptions || [];
+        let preList = [];
         for ( let i = 0 ; i < chunks.length ; i++ ){
-            if ( name && assets.entry !== name ){
+            let chunkName = chunks[i];
+            if (name && chunkName !== name){
                 continue;
             }
-            let arr = assets.entry[chunks[i]].css;
+            let attrs = [].concat(Array.isArray(cssOptions) ? cssOptions : typeof cssOptions === 'object' && Array.isArray(cssOptions[chunkName]) ? cssOptions[chunkName] : []);
+            let index = attrs.length ? attrs.findIndex((e)=>e.trim() === 'rel="preload"') : -1;
+            if (!assets.entry[chunkName] || !assets.entry[chunkName].css){
+                continue;
+            }
+            let arr = assets.entry[chunkName].css;
             for ( let j = 0 ; j < arr.length; j ++ ){
                 if ( arr[j] ){
-                    cssHtml.push('<link rel="stylesheet" ' + cssOptions.join(' ') + ' href="' + assets.publicPath + arr[j] + '"/>');   
+                    if (isPreload){
+                        if (index >= 0 && !preList.includes(assets.publicPath + arr[j])){
+                            cssHtml.push('<link ' + ['rel="preload"', 'as="style"'].join(' ') + ' href="' + assets.publicPath + arr[j] + '"/>');   
+                            preList.push(assets.publicPath + arr[j]);
+                        }
+                    }else {
+                        if (index >= 0){
+                            attrs.splice(index, 1);
+                        }
+                        cssHtml.push('<link rel="stylesheet" ' + attrs.join(' ') + ' href="' + assets.publicPath + arr[j] + '"/>');
+                    }
                 }
-                 
             }
         }
         return cssHtml.join('');
