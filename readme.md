@@ -12,7 +12,10 @@ npm install --save-dev html-inject-plugin
 new HtmlInjectPlugin({
     filename: 'test.html',
     chunks:['vue' , 'test'],
-    jsOptions: ['defer', 'crossorigin="anonymous"'],
+    jsOptions: {
+        vue: ['rel="preload"', 'crossorigin="anonymous"'],
+        test: ['crossorigin="anonymous"']
+    },
     cssOptions: ['rel="preload"', 'crossorigin="anonymous"'],
     template: path.resolve(__dirname , 'template.html')
 });
@@ -31,6 +34,7 @@ new HtmlInjectPlugin({
 <head>
     <meta charset="UTF-8">
     <title>test</title>
+    <!-- inject:preload -->
     <!-- inject:css -->
 </head>
 <body>
@@ -64,7 +68,11 @@ new HtmlInjectPlugin({
 <head>
     <meta charset="UTF-8">
     <title><%=title%></title>
-    <link ref="preload" rel="stylesheet" href="http:/www.test.com/dist/test.css?v=18c16ad2a2132b655533" crossorigin="anonymous"/>
+    <link ref="preload" rel="stylesheet" href="http:/www.test.com/dist/test.css?v=18c16ad2a2132b655533" as="style" />
+    <link ref="preload" rel="stylesheet" href="http:/www.test.com/dist/vue.js?v=2981d8bb85bde7e5ce33" as="script"/>
+    <!-- inject:preload -->
+
+    <link rel="stylesheet" href="http:/www.test.com/dist/test.css?v=18c16ad2a2132b655533" crossorigin="anonymous"/>
     <!-- inject:css -->
 </head>
 <body>

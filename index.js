@@ -129,7 +129,7 @@ class HtmlInjectPlugin {
             }
             if (isPreload){
                 if (index >= 0 && !preList.includes(assets.publicPath + assets.entry[chunkName].js)){
-                    scriptHtml.push('<link ' + ['rel="preload"', 'as="script"'].join(' ') + ' src="' + assets.publicPath + assets.entry[chunkName].js + '"></link>');
+                    scriptHtml.push('<link ' + ['rel="preload"', 'as="script"'].join(' ') + ' href="' + assets.publicPath + assets.entry[chunkName].js + '"></link>');
                 }
             }else {
                 if (index >= 0){
