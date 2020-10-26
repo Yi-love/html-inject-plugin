@@ -5,7 +5,7 @@ const childCompiler = require('./lib/compiler');
 
 class HtmlInjectPlugin {
     constructor(options) {
-        this.options = options || {};//filename,template,chunks,encode,crossorigin 
+        this.options = options || {};//filename,template,chunks,encode,jsOptions,cssOptions
     }
 
     apply(compiler) {
@@ -106,12 +106,13 @@ class HtmlInjectPlugin {
     getFullscript(assets , name){
         let scriptHtml = [];
         let chunks = this.options.chunks || [];
-        let crossorigin = this.options.crossorigin ? ('crossorigin="'+ this.options.crossorigin + '"') : '';
+        let jsOptions = this.options.jsOptions || [];
+
         for ( let i = 0 ; i < chunks.length ; i++ ){
             if ( name && assets.entry !== name ){
                 continue;
             }
-            scriptHtml.push('<script ' + crossorigin + ' src="' + assets.publicPath + assets.entry[chunks[i]].js + '"></script>');
+            scriptHtml.push('<script ' + jsOptions.join(' ') + ' src="' + assets.publicPath + assets.entry[chunks[i]].js + '"></script>');
         }
         return scriptHtml.join('');
     }
@@ -119,6 +120,7 @@ class HtmlInjectPlugin {
     getFullCss(assets , name){
         let cssHtml = [];
         let chunks = this.options.chunks || [];
+        let cssOptions = this.options.cssOptions || [];
         for ( let i = 0 ; i < chunks.length ; i++ ){
             if ( name && assets.entry !== name ){
                 continue;
@@ -126,7 +128,7 @@ class HtmlInjectPlugin {
             let arr = assets.entry[chunks[i]].css;
             for ( let j = 0 ; j < arr.length; j ++ ){
                 if ( arr[j] ){
-                    cssHtml.push('<link rel="stylesheet" href="' + assets.publicPath + arr[j] + '"/>');   
+                    cssHtml.push('<link rel="stylesheet" ' + cssOptions.join(' ') + ' href="' + assets.publicPath + arr[j] + '"/>');   
                 }
                  
             }

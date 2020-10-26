@@ -12,7 +12,8 @@ npm install --save-dev html-inject-plugin
 new HtmlInjectPlugin({
     filename: 'test.html',
     chunks:['vue' , 'test'],
-    crossorigin: 'anonymous',
+    jsOptions: ['defer', 'crossorigin="anonymous"'],
+    cssOptions: ['rel="preload"', 'crossorigin="anonymous"'],
     template: path.resolve(__dirname , 'template.html')
 });
 ```
@@ -35,7 +36,7 @@ new HtmlInjectPlugin({
 <body>
     <div class="body-wrapper">
        <div id="headerApp">header</div>
-        <div class="main-warpper">
+        <div class="main-wrapper">
             <div id="sidebarApp">sidebar</div>
             <div class="main-container">
             </div>
@@ -63,13 +64,13 @@ new HtmlInjectPlugin({
 <head>
     <meta charset="UTF-8">
     <title><%=title%></title>
-    <link rel="stylesheet" href="http:/www.test.com/dist/test.css?v=18c16ad2a2132b655533"/>
+    <link ref="preload" rel="stylesheet" href="http:/www.test.com/dist/test.css?v=18c16ad2a2132b655533" crossorigin="anonymous"/>
     <!-- inject:css -->
 </head>
 <body>
     <div class="body-wrapper">
        <div id="headerApp">header</div>
-        <div class="main-warpper">
+        <div class="main-wrapper">
             <div id="sidebarApp">sidebar</div>
             <div class="main-container">
                 <%=render.content%>
@@ -77,8 +78,8 @@ new HtmlInjectPlugin({
         </div>
         <div id="footerApp">footer</div> 
     </div>
-    <script crossorigin="anonymous" src="http:/www.test.com/dist/vue.js?v=2981d8bb85bde7e5ce33"></script>
-<script crossorigin="anonymous" src="http:/www.test.com/dist/test.js?v=2981d8bb85bde7e5ce33"></script>
+    <script crossorigin="anonymous" defer src="http:/www.test.com/dist/vue.js?v=2981d8bb85bde7e5ce33" ></script>
+    <script crossorigin="anonymous" defer src="http:/www.test.com/dist/test.js?v=2981d8bb85bde7e5ce33"></script>
 <!-- inject:js -->
 </body>
 </html>
