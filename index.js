@@ -142,7 +142,7 @@ class HtmlInjectPlugin {
             }
             if (isPreload){
                 if (index >= 0 && !preList.includes(assets.publicPath + assets.entry[chunkName].js)){
-                    scriptHtml.push('<link ' + ['rel="preload"', 'as="script"', 'crossorigin="anonymous"'].join(' ') + ' href="' + assets.publicPath + assets.entry[chunkName].js + '"></link>');
+                    scriptHtml.push('<link ' + ['rel="preload"', 'as="script"', attrs.includes('crossorigin="anonymous"') ? 'crossorigin="anonymous"' : ''].join(' ') + ' href="' + assets.publicPath + assets.entry[chunkName].js + '"></link>');
                 }
             }else {
                 if (index >= 0){
@@ -175,7 +175,7 @@ class HtmlInjectPlugin {
                 if ( arr[j] ){
                     if (isPreload){
                         if (index >= 0 && !preList.includes(assets.publicPath + arr[j])){
-                            cssHtml.push('<link ' + ['rel="preload"', 'as="style"', 'crossorigin="anonymous"'].join(' ') + ' href="' + assets.publicPath + arr[j] + '"/>');   
+                            cssHtml.push('<link ' + ['rel="preload"', 'as="style"', attrs.includes('crossorigin="anonymous"') ? 'crossorigin="anonymous"' : ''].join(' ') + ' href="' + assets.publicPath + arr[j] + '"/>');   
                             preList.push(assets.publicPath + arr[j]);
                         }
                     }else {
