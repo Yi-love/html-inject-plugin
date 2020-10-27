@@ -74,14 +74,27 @@ class HtmlInjectPlugin {
             
             let html = fs.readFileSync(self.options.template , self.options.encode || 'utf-8') || '';
             // 获取预加载文件
-            let cssPreload = self.getFullCss(assets, false, true);
-            let jsPreload = self.getFullScript(assets, false, true);
-            let injectPreloadRegx = /<!--\s*inject:preload\s*-->/img;
+            let injectPreloadAllRegx = /<!--\s*inject:preload\s*-->/img;
+            let injectPreloadRegx = /<!--\s*inject:preload:(css|js)(:[a-z0-9A-Z._-]+)?\s*-->/img;
             let injectRegx = /<!--\s*inject:(css|js)(:[a-z0-9A-Z._-]+)?\s*-->/img;
             
+            // 注入Preload All
+            html = html.replace(injectPreloadAllRegx , function(source) {
+                return self.getFullScript(assets , false, true) + self.getFullCss(assets , false, true) + source;
+            });
             // 注入Preload
-            html = html.replace(injectPreloadRegx, function(source){
-                return cssPreload + jsPreload + source;
+            html = html.replace(injectPreloadRegx , function(source , ext , name , index) {
+                if ( name ){
+                    name =  name.replace(/^:/,'');
+                }
+                switch(ext){
+                    case 'js':
+                        return self.getFullScript(assets , name, true) + source;
+                    case 'css':
+                        return self.getFullCss(assets , name, true) + source;
+                    default:
+                        return self.getFullScript(assets , name, true) + self.getFullCss(assets , name, true) + source;
+                }
             });
 
             //注入js,css
